@@ -1,0 +1,143 @@
+name: Check for Duplicate Issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-duplicates:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      
+    steps:
+      - name: Check for duplicates
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const currentIssue = context.payload.issue;
+            const currentTitle = currentIssue.title.toLowerCase();
+            const currentBody = (currentIssue.body || '').toLowerCase();
+            
+            // Erkenne Sprache (einfache Heuristik)
+            const germanWords = ['und', 'der', 'die', 'das', 'ich', 'ist', 'mit', 'auf', 'für', 'ein', 'eine'];
+            const englishWords = ['the', 'and', 'is', 'in', 'to', 'of', 'for', 'with', 'this', 'that'];
+            
+            const text = (currentTitle + ' ' + currentBody).toLowerCase();
+            const germanScore = germanWords.filter(w => text.includes(w)).length;
+            const englishScore = englishWords.filter(w => text.includes(w)).length;
+            const isGerman = germanScore > englishScore;
+            
+            console.log(`Language detected: ${isGerman ? 'German' : 'English'} (DE: ${germanScore}, EN: ${englishScore})`);
+            
+            // Hole alle offenen Issues
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            
+            // Funktion zur Berechnung der Ähnlichkeit
+            function similarity(str1, str2) {
+              const longer = str1.length > str2.length ? str1 : str2;
+              const shorter = str1.length > str2.length ? str2 : str1;
+              if (longer.length === 0) return 1.0;
+              
+              const editDistance = (s1, s2) => {
+                s1 = s1.toLowerCase();
+                s2 = s2.toLowerCase();
+                const costs = [];
+                for (let i = 0; i <= s1.length; i++) {
+                  let lastValue = i;
+                  for (let j = 0; j <= s2.length; j++) {
+                    if (i === 0) {
+                      costs[j] = j;
+                    } else if (j > 0) {
+                      let newValue = costs[j - 1];
+                      if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                        newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                      }
+                      costs[j - 1] = lastValue;
+                      lastValue = newValue;
+                    }
+                  }
+                  if (i > 0) costs[s2.length] = lastValue;
+                }
+                return costs[s2.length];
+              };
+              
+              return (longer.length - editDistance(longer, shorter)) / longer.length;
+            }
+            
+            // Suche nach ähnlichen Issues
+            const duplicates = [];
+            for (const issue of issues.data) {
+              if (issue.number === currentIssue.number) continue;
+              
+              const issueTitle = issue.title.toLowerCase();
+              const issueBody = (issue.body || '').toLowerCase();
+              
+              // Berechne Ähnlichkeit
+              const titleSimilarity = similarity(currentTitle, issueTitle);
+              const bodySimilarity = similarity(currentBody.substring(0, 500), issueBody.substring(0, 500));
+              
+              // Wenn Titel sehr ähnlich (>70%) oder beides relativ ähnlich (>60%)
+              if (titleSimilarity > 0.7 || (titleSimilarity > 0.5 && bodySimilarity > 0.6)) {
+                duplicates.push({
+                  number: issue.number,
+                  title: issue.title,
+                  url: issue.html_url,
+                  similarity: Math.round((titleSimilarity + bodySimilarity) / 2 * 100)
+                });
+              }
+            }
+            
+            // Wenn Duplikate gefunden wurden
+            if (duplicates.length > 0) {
+              // Füge Label hinzu
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: currentIssue.number,
+                labels: ['possible-duplicate']
+              });
+              
+              // Erstelle Kommentar mit Links zu ähnlichen Issues
+              duplicates.sort((a, b) => b.similarity - a.similarity);
+              const duplicatesList = duplicates.slice(0, 5).map(d => 
+                `- #${d.number}: ${d.title} (${d.similarity}% ${isGerman ? 'ähnlich' : 'similar'})`
+              ).join('\n');
+              
+              const comment = isGerman ? 
+                `⚠️ **Mögliches Duplikat erkannt**
+
+            Dieses Issue scheint ähnlich zu folgenden bereits existierenden Issues zu sein:
+
+            ${duplicatesList}
+
+            Bitte überprüfe, ob dein Anliegen bereits in einem dieser Issues behandelt wird. Falls ja, schließe dieses Issue bitte und kommentiere stattdessen im existierenden Issue.
+
+            _Diese Nachricht wurde automatisch generiert. Falls dies ein Fehler ist, ignoriere sie einfach._` 
+                : 
+                `⚠️ **Possible Duplicate Detected**
+
+            This issue appears to be similar to the following existing issues:
+
+            ${duplicatesList}
+
+            Please check if your concern is already addressed in one of these issues. If so, please close this issue and comment on the existing one instead.
+
+            _This message was generated automatically. If this is a mistake, please ignore it._`;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: currentIssue.number,
+                body: comment
+              });
+              
+              console.log(`Found ${duplicates.length} possible duplicate(s)`);
+            } else {
+              console.log('No duplicates found');
+            }
