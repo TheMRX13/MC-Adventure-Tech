@@ -1,0 +1,10 @@
+{
+  "badgeVisible": true,
+  "builtinServers": [
+    {
+      "name": "The Adventure Tech Server",
+      "address": "readingdiary.webhop.me",
+      "forced": true
+    }
+  ]
+}
