@@ -1,0 +1,78 @@
+name: "🐛 Bug Report (Deutsch)"
+description: Melde einen Bug oder ein Problem mit dem Modpack
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke, dass du einen Bug meldest! Bitte fülle das Formular so detailliert wie möglich aus.
+        
+  - type: dropdown
+    id: version
+    attributes:
+      label: Modpack Version
+      description: Welche Version des Modpacks verwendest du?
+      options:
+        - Latest
+        - Andere (bitte in Beschreibung angeben)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung des Problems
+      description: Beschreibe den Bug so detailliert wie möglich
+      placeholder: Was ist passiert? Was hast du erwartet?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Wie können wir den Bug nachstellen?
+      placeholder: |
+        1. Gehe zu...
+        2. Klicke auf...
+        3. Mache...
+        4. Siehe Fehler...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: crashlog
+    attributes:
+      label: Crash-Log / Fehlermeldung
+      description: Falls vorhanden, füge hier den Crash-Log oder die Fehlermeldung ein
+      placeholder: Füge hier den Log ein (aus crash-reports Ordner)
+      render: shell
+      
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Falls relevant, füge Screenshots hinzu
+      placeholder: Ziehe Bilder hier rein oder füge Links ein
+      
+  - type: dropdown
+    id: occurrence
+    attributes:
+      label: Wie oft tritt das Problem auf?
+      options:
+        - Immer
+        - Manchmal
+        - Nur einmal passiert
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Bestätigung
+      options:
+        - label: Ich habe überprüft, dass dieser Bug noch nicht gemeldet wurde
+          required: true
+        - label: Ich verwende die neueste Version des Modpacks
+          required: false

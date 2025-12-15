@@ -1,0 +1,54 @@
+name: "💡 Feature Request (Deutsch)"
+description: Schlage ein neues Feature oder eine Verbesserung vor
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Vorschlag! Beschreibe deine Idee so detailliert wie möglich.
+        
+  - type: dropdown
+    id: type
+    attributes:
+      label: Art des Vorschlags
+      options:
+        - Gameplay Verbesserung
+        - Performance Optimierung
+        - Neue Konfiguration
+        - Qualität des Lebens (QoL)
+        - Anderes
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Was möchtest du hinzugefügt oder geändert sehen?
+      placeholder: Beschreibe deine Idee im Detail...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reason
+    attributes:
+      label: Warum ist das nützlich?
+      description: Erkläre, warum diese Änderung dem Modpack helfen würde
+      placeholder: Welches Problem löst dies? Oder welche Verbesserung bringt es?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen
+      description: Hast du über alternative Lösungen nachgedacht?
+      placeholder: Gibt es andere Wege, dies zu erreichen?
+      
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzliche Informationen
+      description: Weitere Infos, Screenshots oder Links
+      placeholder: Alles weitere, was relevant sein könnte...

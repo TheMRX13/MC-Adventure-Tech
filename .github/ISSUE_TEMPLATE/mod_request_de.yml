@@ -1,0 +1,74 @@
+name: "📦 Mod Anfrage (Deutsch)"
+description: Schlage eine neue Mod für das Modpack vor
+title: "[Mod]: "
+labels: ["mod-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Möchtest du eine Mod zum Modpack hinzugefügt sehen? Fülle das Formular aus!
+        
+  - type: input
+    id: mod-name
+    attributes:
+      label: Name der Mod
+      description: Wie heißt die Mod?
+      placeholder: z.B. Applied Energistics 2
+    validations:
+      required: true
+      
+  - type: input
+    id: mod-link
+    attributes:
+      label: Link zur Mod
+      description: CurseForge oder Modrinth Link
+      placeholder: https://www.curseforge.com/minecraft/mc-mods/...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Was macht die Mod?
+      description: Beschreibe kurz, was die Mod hinzufügt
+      placeholder: Die Mod fügt... hinzu
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reason
+    attributes:
+      label: Warum sollte sie hinzugefügt werden?
+      description: Warum passt diese Mod zum Modpack?
+      placeholder: Diese Mod würde gut passen, weil...
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: category
+    attributes:
+      label: Kategorie
+      description: In welche Kategorie fällt die Mod?
+      options:
+        - Tech / Technologie
+        - Magie
+        - Dekoration / Bau
+        - Abenteuer / Exploration
+        - Landwirtschaft / Farming
+        - Performance
+        - Quality of Life
+        - Anderes
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: compatibility
+    attributes:
+      label: Kompatibilität
+      options:
+        - label: Ich habe überprüft, dass die Mod mit Forge 1.20.1 kompatibel ist
+          required: true
+        - label: Die Mod wurde noch nicht vorgeschlagen
+          required: true
+        - label: Ich habe nach Konflikten mit bestehenden Mods gesucht
+          required: false

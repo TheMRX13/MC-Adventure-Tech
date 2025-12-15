@@ -1,0 +1,78 @@
+name: "🐛 Bug Report (English)"
+description: Report a bug or issue with the modpack
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the form as detailed as possible.
+        
+  - type: dropdown
+    id: version
+    attributes:
+      label: Modpack Version
+      description: Which version of the modpack are you using?
+      options:
+        - Latest
+        - Other (please specify in description)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem Description
+      description: Describe the bug as detailed as possible
+      placeholder: What happened? What did you expect?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce the bug?
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Do...
+        4. See error...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: crashlog
+    attributes:
+      label: Crash Log / Error Message
+      description: If available, paste the crash log or error message here
+      placeholder: Paste log here (from crash-reports folder)
+      render: shell
+      
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If relevant, add screenshots
+      placeholder: Drag images here or paste links
+      
+  - type: dropdown
+    id: occurrence
+    attributes:
+      label: How often does this occur?
+      options:
+        - Always
+        - Sometimes
+        - Only happened once
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have checked that this bug hasn't been reported yet
+          required: true
+        - label: I am using the latest version of the modpack
+          required: false
